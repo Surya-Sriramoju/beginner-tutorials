@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-// #include "beginner_tutorials/msg/custom.hpp"
 #include "std_msgs/msg/string.hpp"
 using std::placeholders::_1;
 

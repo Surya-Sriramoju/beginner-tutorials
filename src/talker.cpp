@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-// #include "beginner_tutorials/msg/custom.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "beginner_tutorials/srv/change_string.hpp"
 
@@ -33,6 +32,12 @@ class MinimalPublisher : public rclcpp::Node {
   MinimalPublisher()
   : Node("minimal_publisher"), base_string_("This is the base string!") {
 
+    this->declare_parameter("message", "This is the base string!");
+    this->declare_parameter("pub_freq", 1000);
+
+    base_string_ = this->get_parameter("message").as_string();
+    int pub_frq = this->get_parameter("pub_freq").as_int();
+
     publisher_ = this->create_publisher<std_msgs::msg::String>
     ("topic", 10);
 
@@ -41,8 +46,12 @@ class MinimalPublisher : public rclcpp::Node {
       this, std::placeholders::_1, std::placeholders::_2)
     );
 
+    RCLCPP_INFO_STREAM(this->get_logger(),
+                    "Node initialized with base string: "
+                    << base_string_);
+
     timer_ = this->create_wall_timer(
-      500ms, std::bind(&MinimalPublisher::timer_callback, this));
+      std::chrono::milliseconds(pub_frq), std::bind(&MinimalPublisher::timer_callback, this));
   }
 
  private:
@@ -51,6 +60,11 @@ class MinimalPublisher : public rclcpp::Node {
  * 
  */
   void timer_callback() {
+    if(base_string_ == "None") {
+      RCLCPP_FATAL(this->get_logger(),
+            "Base string is empty. Send a request again!");
+            return;
+    }
     auto message = std_msgs::msg::String();
     message.data = base_string_;
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
@@ -78,6 +92,7 @@ class MinimalPublisher : public rclcpp::Node {
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   rclcpp::Service<beginner_tutorials::srv::ChangeString>::SharedPtr service_;
   std::string base_string_;
+  std_msgs::msg::String param_message_;
 };
 
 int main(int argc, char * argv[]) {
