@@ -31,9 +31,9 @@
 
 ## Launching the launch file
 ```bash
-  ros2 launch beginner_tutorials _launch.py
+  ros2 launch beginner_tutorials launch.py
 # with params
-  ros2 launch beginner_tutorials _launch.py message:=<your message> pub_freq:=<desired_message_frequency>
+  ros2 launch beginner_tutorials launch.py message:=<your message> pub_freq:=<desired_message_frequency>
 ```
 
 
