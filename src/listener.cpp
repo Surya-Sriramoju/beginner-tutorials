@@ -12,7 +12,8 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-#include "beginner_tutorials/msg/custom.hpp"
+// #include "beginner_tutorials/msg/custom.hpp"
+#include "std_msgs/msg/string.hpp"
 using std::placeholders::_1;
 
 class MinimalSubscriber : public rclcpp::Node {
@@ -24,7 +25,7 @@ class MinimalSubscriber : public rclcpp::Node {
   MinimalSubscriber()
   : Node("minimal_subscriber") {
     subscription_ = this->create_subscription
-    <beginner_tutorials::msg::Custom>(
+    <std_msgs::msg::String>(
       "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
   }
 
@@ -35,11 +36,11 @@ class MinimalSubscriber : public rclcpp::Node {
  * @param msg 
  */
   void topic_callback(const
-  beginner_tutorials::msg::Custom::SharedPtr msg) const {
-    RCLCPP_INFO(this->get_logger(), "I heard: %s", msg->text.c_str());
+  std_msgs::msg::String::SharedPtr msg) const {
+    RCLCPP_INFO(this->get_logger(), "I heard: %s", msg->data.c_str());
   }
   rclcpp::Subscription
-  <beginner_tutorials::msg::Custom>::SharedPtr subscription_;
+  <std_msgs::msg::String>::SharedPtr subscription_;
 };
 
 int main(int argc, char * argv[]) {
