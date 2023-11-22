@@ -39,7 +39,7 @@
 ```bash
 # To verify the broadcasted tf frames from world to talk
   ros2 run tf2_ros tf2_echo world talk
-# To visualise the TF frames
+# To visualise the TF frames, the file can be found in results
   ros2 run tf2_tools view_frames
 ```
 ## For recording the ros2 bag
