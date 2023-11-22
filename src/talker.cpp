@@ -15,6 +15,9 @@
 #include "beginner_tutorials/srv/change_string.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
 
 // using namespace std::chrono_literals;
 
@@ -37,7 +40,6 @@ class MinimalPublisher : public rclcpp::Node {
 
     base_string_ = this->get_parameter("message").as_string();
     int pub_frq = this->get_parameter("pub_freq").as_int();
-    
     // created a publisher
     publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
 
@@ -52,6 +54,9 @@ class MinimalPublisher : public rclcpp::Node {
     timer_ = this->create_wall_timer(
         std::chrono::milliseconds(pub_frq),
         std::bind(&MinimalPublisher::timer_callback, this));
+    MinimalPublisher::tf_static_broadcaster_ =
+    std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+    this->broadcast_transforms();
   }
 
  private:
@@ -72,6 +77,31 @@ class MinimalPublisher : public rclcpp::Node {
   }
 
   /**
+   * @brief method to broadcast frames from world to talk frame
+   * 
+   */
+
+
+  void broadcast_transforms() {
+    geometry_msgs::msg::TransformStamped t;
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = "world";
+    t.child_frame_id = "talk";
+    t.transform.translation.x = 2;
+    t.transform.translation.y = 2;
+    t.transform.translation.z = 0;
+    tf2::Quaternion q;
+    q.setRPY(0, 0, 10);
+    t.transform.rotation.x = q.x();
+    t.transform.rotation.y = q.y();
+    t.transform.rotation.z = q.z();
+    t.transform.rotation.w = q.w();
+    tf_static_broadcaster_->sendTransform(t);
+    RCLCPP_INFO_STREAM(this->get_logger(),
+    "Broadcasted transform from world to talk");
+  }
+
+   /**
    * @brief change_string service
    *
    * @param request
@@ -98,6 +128,7 @@ class MinimalPublisher : public rclcpp::Node {
   rclcpp::Service<beginner_tutorials::srv::ChangeString>::SharedPtr service_;
   std::string base_string_;
   std_msgs::msg::String param_message_;
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broadcaster_;
 };
 
 int main(int argc, char* argv[]) {
