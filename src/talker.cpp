@@ -40,7 +40,6 @@ class MinimalPublisher : public rclcpp::Node {
 
     base_string_ = this->get_parameter("message").as_string();
     int pub_frq = this->get_parameter("pub_freq").as_int();
-    
     // created a publisher
     publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
 
@@ -55,11 +54,9 @@ class MinimalPublisher : public rclcpp::Node {
     timer_ = this->create_wall_timer(
         std::chrono::milliseconds(pub_frq),
         std::bind(&MinimalPublisher::timer_callback, this));
-    
     MinimalPublisher::tf_static_broadcaster_ =
     std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     this->broadcast_transforms();
-    
   }
 
  private:
@@ -77,7 +74,6 @@ class MinimalPublisher : public rclcpp::Node {
     message.data = base_string_;
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     publisher_->publish(message);
-    
   }
 
   /**
@@ -101,7 +97,8 @@ class MinimalPublisher : public rclcpp::Node {
     t.transform.rotation.z = q.z();
     t.transform.rotation.w = q.w();
     tf_static_broadcaster_->sendTransform(t);
-    RCLCPP_INFO_STREAM(this->get_logger(), "Broadcasted transform from world to talk");
+    RCLCPP_INFO_STREAM(this->get_logger(),
+    "Broadcasted transform from world to talk");
   }
 
    /**
