@@ -32,12 +32,12 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 add_executable(talker src/talker.cpp)
 add_executable(listener src/listener.cpp)
 
-ament_target_dependencies(talker rclcpp std_msgs)
+ament_target_dependencies(talker rclcpp std_msgs tf2_msgs)
 ament_target_dependencies(listener rclcpp std_msgs)
 
 rosidl_get_typesupport_target(cpp_ts_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-target_link_libraries(talker "${cpp_ts_target}")
+target_link_libraries(talker "${cpp_ts_target}" "${tf2_ros_LIBRARIES}")
 target_link_libraries(listener "${cpp_ts_target}")
 
 install(TARGETS
@@ -51,16 +51,6 @@ include_directories(
   ${tf2_INCLUDE_DIRS}
   ${tf2_ros_INCLUDE_DIRS}
 )
-
-target_link_libraries(talker
-  ${tf2_ros_LIBRARIES}
-)
-
-ament_target_dependencies(talker
-  tf2_msgs
-)
-
-
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}
@@ -71,7 +61,15 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   set(ament_cmake_copyright_FOUND TRUE)
   set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_pep257_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+
+  set(TESTFILES
+  test/talker_test.cpp)
+  ament_add_gtest(talker_test ${TESTFILES})
+  ament_target_dependencies(talker_test rclcpp std_msgs rosidl_default_runtime)
 endif()
 
 ament_package()
