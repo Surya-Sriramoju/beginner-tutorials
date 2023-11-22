@@ -58,6 +58,7 @@ class MinimalPublisher : public rclcpp::Node {
     
     MinimalPublisher::tf_static_broadcaster_ =
     std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+    this->broadcast_transforms();
     
   }
 
@@ -76,14 +77,12 @@ class MinimalPublisher : public rclcpp::Node {
     message.data = base_string_;
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     publisher_->publish(message);
-    this->broadcast_transforms();
+    
   }
 
   /**
-   * @brief change_string service
-   *
-   * @param request
-   * @param response
+   * @brief method to broadcast frames from world to talk frame
+   * 
    */
 
 
@@ -105,6 +104,12 @@ class MinimalPublisher : public rclcpp::Node {
     RCLCPP_INFO_STREAM(this->get_logger(), "Broadcasted transform from world to talk");
   }
 
+   /**
+   * @brief change_string service
+   *
+   * @param request
+   * @param response
+   */
 
   void changeStringRequest(
       const std::shared_ptr<beginner_tutorials::srv::ChangeString::Request>
