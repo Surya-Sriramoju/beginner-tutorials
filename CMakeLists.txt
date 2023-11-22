@@ -8,9 +8,11 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_msgs REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -43,6 +45,21 @@ install(TARGETS
   listener
   DESTINATION lib/${PROJECT_NAME}
 )
+
+include_directories(
+  ${geometry_msgs_INCLUDE_DIRS}
+  ${tf2_INCLUDE_DIRS}
+  ${tf2_ros_INCLUDE_DIRS}
+)
+
+target_link_libraries(talker
+  ${tf2_ros_LIBRARIES}
+)
+
+ament_target_dependencies(talker
+  tf2_msgs
+)
+
 
 install(DIRECTORY
   launch
